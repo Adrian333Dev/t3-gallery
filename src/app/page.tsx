@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { db } from "~/server/db";
 
 const imgUrls = [
   "https://utfs.io/f/b5f44566-bbec-4663-b8dd-6040aa5471bd-p0mozu.svg.png",
@@ -15,26 +15,25 @@ const mockImgs = imgUrls.map((url, i) => ({
   name: `Image ${i + 1}`,
 }));
 
-export default function HomePage() {
+export default async function HomePage() {
+  const posts = await db.query.posts.findMany();
+
   return (
     <main className="">
-       <div className="flex flex-wrap justify-center gap-4 p-4">
-      {mockImgs.map((image) => (
-        <div key={image.id} className="flex h-48 w-48 flex-col">
-          <Link href={`/img/${image.id}`}>
-            {/* <Image
-              src={image.url}
-              style={{ objectFit: "contain" }}
-              width={192}
-              height={192}
-              alt={image.name}
-            /> */}
-            <img src={image.url} alt={image.name} />
-          </Link>
-          <div>{image.name}</div>
-        </div>
+      <div className="flex flex-wrap justify-center gap-4 p-4">
+        {mockImgs.map((image) => (
+          <div key={image.id} className="flex h-48 w-48 flex-col">
+            <Link href={`/img/${image.id}`}>
+              <img src={image.url} alt={image.name} />
+            </Link>
+            <div>{image.name}</div>
+          </div>
+        ))}
+      </div>
+
+      {posts.map((post) => (
+        <div key={post.id}>{post.name}</div>
       ))}
-    </div>
     </main>
   );
 }
